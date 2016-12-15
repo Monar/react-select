@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 
 const Value = React.createClass({
 
@@ -12,6 +11,7 @@ const Value = React.createClass({
 		onClick: React.PropTypes.func,                // method to handle click on value label
 		onRemove: React.PropTypes.func,               // method to handle removal of the value
 		value: React.PropTypes.object.isRequired,     // the option object for this value
+		bemNames: React.PropTypes.func.isRequired,     // factory function generating bem-like classnames
 	},
 
 	handleMouseDown (event) {
@@ -56,7 +56,7 @@ const Value = React.createClass({
 	renderRemoveIcon () {
 		if (this.props.disabled || !this.props.onRemove) return;
 		return (
-			<span className="Select-value-icon"
+			<span className={this.props.bemNames('value-icon')}
 				aria-hidden="true"
 				onMouseDown={this.onRemove}
 				onTouchEnd={this.handleTouchEndRemove}
@@ -68,7 +68,7 @@ const Value = React.createClass({
 	},
 
 	renderLabel () {
-		let className = 'Select-value-label';
+		let className = this.props.bemNames('value-label');
 		return this.props.onClick || this.props.value.href ? (
 			<a className={className} href={this.props.value.href} target={this.props.value.target} onMouseDown={this.handleMouseDown} onTouchEnd={this.handleMouseDown}>
 				{this.props.children}
@@ -82,7 +82,7 @@ const Value = React.createClass({
 
 	render () {
 		return (
-			<div className={classNames('Select-value', this.props.value.className)}
+			<div className={this.props.bemNames('value', this.props.value.className)}
 				style={this.props.value.style}
 				title={this.props.value.title}
 				>

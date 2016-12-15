@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 
 const Option = React.createClass({
 	propTypes: {
@@ -66,8 +65,7 @@ const Option = React.createClass({
 		}
 	},
 	render () {
-		var { option, instancePrefix, optionIndex } = this.props;
-		var className = classNames(this.props.className, option.className);
+		var { option, instancePrefix, optionIndex, className } = this.props;
 
 		return option.disabled ? (
 			<div className={className}

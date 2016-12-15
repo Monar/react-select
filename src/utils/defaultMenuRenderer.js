@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import React from 'react';
 
 function menuRenderer ({
@@ -13,19 +12,20 @@ function menuRenderer ({
 	options,
 	valueArray,
 	valueKey,
-	onOptionRef
+	onOptionRef,
+	bemNames
 }) {
 	let Option = optionComponent;
 
 	return options.map((option, i) => {
 		let isSelected = valueArray && valueArray.indexOf(option) > -1;
 		let isFocused = option === focusedOption;
-		let optionClass = classNames(optionClassName, {
-			'Select-option': true,
-			'is-selected': isSelected,
-			'is-focused': isFocused,
-			'is-disabled': option.disabled,
-		});
+		let optionClass = bemNames(
+			'option',
+			{ isSelected, isFocused, disabled: option.disabled },
+			optionClassName,
+			option.className
+		);
 
 		return (
 			<Option
