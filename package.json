@@ -1,6 +1,6 @@
 {
   "name": "react-select",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.3.bem.2",
   "description": "A Select control built with and for ReactJS",
   "main": "lib/Select.js",
   "style": "dist/react-select.min.css",
@@ -11,6 +11,7 @@
     "url": "https://github.com/JedWatson/react-select.git"
   },
   "dependencies": {
+    "bem-names": "^1.1.0",
     "classnames": "^2.2.4",
     "react-input-autosize": "^1.1.0"
   },

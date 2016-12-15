@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function clearRenderer () {
+export default function clearRenderer ({ bemNames }) {
 	return (
 		<span
-			className="Select-clear"
+			className={bemNames('clear')}
 			dangerouslySetInnerHTML={{ __html: '&times;' }}
 		/>
 	);
