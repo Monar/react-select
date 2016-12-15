@@ -7,6 +7,7 @@ var taskConfig = {
 		name: 'Select',
 		dependencies: [
 			'classnames',
+			'bem-names',
 			'react-input-autosize',
 			'react',
 			'react-dom'
