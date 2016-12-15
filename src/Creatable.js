@@ -2,6 +2,7 @@ import React from 'react';
 import Select from './Select';
 import defaultFilterOptions from './utils/defaultFilterOptions';
 import defaultMenuRenderer from './utils/defaultMenuRenderer';
+import bemNamesFactory from './utils/bemNames';
 
 const Creatable = React.createClass({
 	displayName: 'CreatableSelect',
@@ -26,6 +27,9 @@ const Creatable = React.createClass({
 
 		// See Select.propTypes.menuRenderer
 		menuRenderer: React.PropTypes.any,
+
+		// Factory function of BEM class names
+		bemNames: React.PropTypes.func,
 
     // Factory to create new option.
     // ({ label: string, labelKey: string, valueKey: string }): Object
@@ -66,6 +70,7 @@ const Creatable = React.createClass({
 			isOptionUnique,
 			isValidNewOption,
 			menuRenderer: defaultMenuRenderer,
+			bemNames: bemNamesFactory('Select'),
 			newOptionCreator,
 			promptTextCreator,
 			shouldKeyDownEventCreateNewOption,
@@ -78,11 +83,12 @@ const Creatable = React.createClass({
 			newOptionCreator,
 			onNewOptionClick,
 			options = [],
+			bemNames,
 			shouldKeyDownEventCreateNewOption
 		} = this.props;
 
 		if (isValidNewOption({ label: this.inputValue })) {
-			const option = newOptionCreator({ label: this.inputValue, labelKey: this.labelKey, valueKey: this.valueKey });
+			const option = newOptionCreator({ bemNames, label: this.inputValue, labelKey: this.labelKey, valueKey: this.valueKey });
 			const isOptionUnique = this.isOptionUnique({ option });
 
 			// Don't add the same option twice.
@@ -99,7 +105,7 @@ const Creatable = React.createClass({
 	},
 
 	filterOptions (...params) {
-		const { filterOptions, isValidNewOption, options, promptTextCreator } = this.props;
+		const { filterOptions, isValidNewOption, options, promptTextCreator, bemNames } = this.props;
 
 		// TRICKY Check currently selected options as well.
 		// Don't display a create-prompt for a value that's selected.
@@ -114,7 +120,8 @@ const Creatable = React.createClass({
 			const option = newOptionCreator({
 				label: this.inputValue,
 				labelKey: this.labelKey,
-				valueKey: this.valueKey
+				valueKey: this.valueKey,
+				bemNames
 			});
 
 			// TRICKY Compare to all options (not just filtered options) in case option has already been selected).
@@ -130,7 +137,8 @@ const Creatable = React.createClass({
 				this._createPlaceholderOption = newOptionCreator({
 					label: prompt,
 					labelKey: this.labelKey,
-					valueKey: this.valueKey
+					valueKey: this.valueKey,
+					bemNames
 				});
 
 				filteredOptions.unshift(this._createPlaceholderOption);
@@ -252,11 +260,11 @@ function isValidNewOption ({ label }) {
 	return !!label;
 };
 
-function newOptionCreator ({ label, labelKey, valueKey }) {
+function newOptionCreator ({ label, labelKey, valueKey, bemNames }) {
 	const option = {};
 	option[valueKey] = label;
  	option[labelKey] = label;
- 	option.className = 'Select-create-option-placeholder';
+ 	option.className = bemNames('create-option-placeholder');
  	return option;
 };
 

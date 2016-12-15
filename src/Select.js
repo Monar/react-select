@@ -12,6 +12,7 @@ import classNames from 'classnames';
 import defaultArrowRenderer from './utils/defaultArrowRenderer';
 import defaultFilterOptions from './utils/defaultFilterOptions';
 import defaultMenuRenderer from './utils/defaultMenuRenderer';
+import bemNamesFactory from './utils/bemNames';
 
 import Async from './Async';
 import AsyncCreatable from './AsyncCreatable';
@@ -53,6 +54,7 @@ const Select = React.createClass({
 		autosize: React.PropTypes.bool,             // whether to enable autosizing or not
 		backspaceRemoves: React.PropTypes.bool,     // whether backspace removes an item if there is no text input
 		backspaceToRemoveMessage: React.PropTypes.string,  // Message to use for screenreaders to press backspace to remove the current item - {label} is replaced with the item label
+		bemNames: React.PropTypes.func,             // factory of bem-like className
 		className: React.PropTypes.string,          // className for the outer element
 		clearAllText: stringOrNode,                 // title for the "clear" control when multi: true
 		clearValueText: stringOrNode,               // title for the "clear" control
@@ -123,6 +125,7 @@ const Select = React.createClass({
 			autosize: true,
 			backspaceRemoves: true,
 			backspaceToRemoveMessage: 'Press backspace to remove {label}',
+			bemNames: bemNamesFactory('Select'),
 			clearable: true,
 			clearAllText: 'Clear all',
 			clearValueText: 'Clear value',
@@ -776,8 +779,8 @@ const Select = React.createClass({
 	renderLoading () {
 		if (!this.props.isLoading) return;
 		return (
-			<span className="Select-loading-zone" aria-hidden="true">
-				<span className="Select-loading" />
+			<span className={this.props.bemNames('loading-zone')} aria-hidden="true">
+				<span className={this.props.bemNames('loading')} />
 			</span>
 		);
 	},
@@ -786,7 +789,7 @@ const Select = React.createClass({
 		let renderLabel = this.props.valueRenderer || this.getOptionLabel;
 		let ValueComponent = this.props.valueComponent;
 		if (!valueArray.length) {
-			return !this.state.inputValue ? <div className="Select-placeholder">{this.props.placeholder}</div> : null;
+			return !this.state.inputValue ? <div className={this.props.bemNames('placeholder')}>{this.props.placeholder}</div> : null;
 		}
 		let onClick = this.props.onValueClick ? this.handleValueClick : null;
 		if (this.props.multi) {
@@ -799,10 +802,11 @@ const Select = React.createClass({
 						key={`value-${i}-${value[this.props.valueKey]}`}
 						onClick={onClick}
 						onRemove={this.removeValue}
+						bemNames={this.props.bemNames}
 						value={value}
 					>
 						{renderLabel(value, i)}
-						<span className="Select-aria-only">&nbsp;</span>
+						<span className={this.props.bemNames('aria-only')}>&nbsp;</span>
 					</ValueComponent>
 				);
 			});
@@ -814,6 +818,7 @@ const Select = React.createClass({
 					disabled={this.props.disabled}
 					instancePrefix={this._instancePrefix}
 					onClick={onClick}
+					bemNames={this.props.bemNames}
 					value={valueArray[0]}
 				>
 					{renderLabel(valueArray[0])}
@@ -823,7 +828,7 @@ const Select = React.createClass({
 	},
 
 	renderInput (valueArray, focusedOptionIndex) {
-		var className = classNames('Select-input', this.props.inputProps.className);
+		var className = classNames(this.props.bemNames('input'), this.props.inputProps.className);
 		const isOpen = !!this.state.isOpen;
 
 		const ariaOwns = classNames({
@@ -891,25 +896,26 @@ const Select = React.createClass({
 	renderClear () {
 		if (!this.props.clearable || (!this.props.value || this.props.value === 0) || (this.props.multi && !this.props.value.length) || this.props.disabled || this.props.isLoading) return;
 		return (
-			<span className="Select-clear-zone" title={this.props.multi ? this.props.clearAllText : this.props.clearValueText}
+			<span className={this.props.bemNames('clear-zone')} title={this.props.multi ? this.props.clearAllText : this.props.clearValueText}
 				aria-label={this.props.multi ? this.props.clearAllText : this.props.clearValueText}
 				onMouseDown={this.clearValue}
 				onTouchStart={this.handleTouchStart}
 				onTouchMove={this.handleTouchMove}
 				onTouchEnd={this.handleTouchEndClearValue}
 			>
-				<span className="Select-clear" dangerouslySetInnerHTML={{ __html: '&times;' }} />
+				<span className={this.props.bemNames('clear')} dangerouslySetInnerHTML={{ __html: '&times;' }} />
 			</span>
 		);
 	},
 
 	renderArrow () {
 		const onMouseDown = this.handleMouseDownOnArrow;
-		const arrow = this.props.arrowRenderer({ onMouseDown });
+		const bemNames = this.props.bemNames;
+		const arrow = this.props.arrowRenderer({ onMouseDown, bemNames });
 
 		return (
 			<span
-				className="Select-arrow-zone"
+				className={this.props.bemNames('arrow-zone')}
 				onMouseDown={onMouseDown}
 			>
 				{arrow}
@@ -968,10 +974,11 @@ const Select = React.createClass({
 				valueArray,
 				valueKey: this.props.valueKey,
 				onOptionRef: this.onOptionRef,
+				bemNames: this.props.bemNames,
 			});
 		} else if (this.props.noResultsText) {
 			return (
-				<div className="Select-noresults">
+				<div className={this.props.bemNames('noresults')}>
 					{this.props.noResultsText}
 				</div>
 			);
@@ -1028,8 +1035,8 @@ const Select = React.createClass({
 		}
 
 		return (
-			<div ref={ref => this.menuContainer = ref} className="Select-menu-outer" style={this.props.menuContainerStyle}>
-				<div ref={ref => this.menu = ref} role="listbox" className="Select-menu" id={this._instancePrefix + '-list'}
+			<div ref={ref => this.menuContainer = ref} className={this.props.bemNames('menu-outer')} style={this.props.menuContainerStyle}>
+				<div ref={ref => this.menu = ref} role="listbox" className={this.props.bemNames('menu')} id={this._instancePrefix + '-list'}
 						 style={this.props.menuStyle}
 						 onScroll={this.handleMenuScroll}
 						 onMouseDown={this.handleMouseDownOnMenu}>
@@ -1052,17 +1059,18 @@ const Select = React.createClass({
 		} else {
 			focusedOption = this._focusedOption = null;
 		}
-		let className = classNames('Select', this.props.className, {
-			'Select--multi': this.props.multi,
-			'Select--single': !this.props.multi,
-			'is-disabled': this.props.disabled,
-			'is-focused': this.state.isFocused,
-			'is-loading': this.props.isLoading,
-			'is-open': isOpen,
-			'is-pseudo-focused': this.state.isPseudoFocused,
-			'is-searchable': this.props.searchable,
-			'has-value': valueArray.length,
+		const bemName = this.props.bemNames({
+			multi: this.props.multi,
+			single: !this.props.multi,
+			disabled: this.props.disabled,
+			isFocused: this.state.isFocused,
+			isLoading: this.props.isLoading,
+			isOpen,
+			isPseudoFocused: this.state.isPseudoFocused,
+			selectedOption: this.props.searchable,
+			hasValues: valueArray.length,
 		});
+		const className = classNames(bemName, this.props.className);
 
 		let removeMessage = null;
 		if (this.props.multi &&
@@ -1072,7 +1080,7 @@ const Select = React.createClass({
 			this.state.isFocused &&
 			this.props.backspaceRemoves) {
 			removeMessage = (
-				<span id={this._instancePrefix + '-backspace-remove-message'} className="Select-aria-only" aria-live="assertive">
+				<span id={this._instancePrefix + '-backspace-remove-message'} className={this.props.bemNames('aria-only')} aria-live="assertive">
 					{this.props.backspaceToRemoveMessage.replace('{label}', valueArray[valueArray.length - 1][this.props.labelKey])}
 				</span>
 			);
@@ -1084,7 +1092,7 @@ const Select = React.createClass({
 				 style={this.props.wrapperStyle}>
 				{this.renderHiddenField(valueArray)}
 				<div ref={ref => this.control = ref}
-					className="Select-control"
+					className={this.props.bemNames('control')}
 					style={this.props.style}
 					onKeyDown={this.handleKeyDown}
 					onMouseDown={this.handleMouseDown}
@@ -1092,7 +1100,7 @@ const Select = React.createClass({
 					onTouchStart={this.handleTouchStart}
 					onTouchMove={this.handleTouchMove}
 				>
-					<span className="Select-multi-value-wrapper" id={this._instancePrefix + '-value'}>
+					<span className={this.props.bemNames('multi-value-wrapper')} id={this._instancePrefix + '-value'}>
 						{this.renderValue(valueArray, isOpen)}
 						{this.renderInput(valueArray, focusedOptionIndex)}
 					</span>
